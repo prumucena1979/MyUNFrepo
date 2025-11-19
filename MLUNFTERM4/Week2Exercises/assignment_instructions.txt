@@ -1,0 +1,98 @@
+Instructional objective
+
+This document explains, how each assignment point (PART A–F) is delivered and solved in the notebook `week02_ml_assignment.ipynb`. Read this before running the notebook — it contains pointers to what the code does, the inputs and outputs, and small notes to help you understand the steps.
+
+PART A — Data loading & EDA (Cell 3)
+- Objective: Load the Wine dataset, inspect its shape and contents, and get a quick numeric summary and simple visualizations.
+- What the code does: uses scikit-learn's `load_wine(as_frame=True)` to create a pandas DataFrame. It adds a readable class label column (`target_name`) and prints:
+  - the data shape (rows, columns)
+  - the first few rows (`head()`)
+  - a numeric summary (`describe().T`)
+  - class counts and proportions
+  - a simple histogram plot for the first four features
+- Inputs: none (dataset loaded from scikit-learn)
+- Outputs: printed summaries and an on-screen histogram plot
+- Why this matters: these steps help you confirm the data looks right, learn about feature ranges, and check class balance before modelling.
+- Student tip: run this cell first and inspect printed output to confirm no missing or unexpected values.
+
+PART B — Preprocessing & correlation checks (Cell 5)
+- Objective: Look for missing values and highly correlated features that might be redundant.
+- What the code does:
+  - checks for missing values; if any, fills them with column medians
+  - computes the correlation matrix for numeric features and plots a heatmap
+  - searches for pairs with absolute correlation > 0.95 and collects features to drop (keeps the first one of each pair)
+  - constructs feature matrix `X` and target vector `y` for modelling
+- Inputs: `df` created in PART A
+- Outputs: correlation heatmap (visual), `X` DataFrame and `y` Series
+- Why this matters: removing very collinear features reduces redundancy and can help some models behave better.
+- Student tip: inspect the `to_drop` output to learn which features were considered collinear.
+
+PART C — Feature engineering and PCA visualization (Cell 7)
+- Objective: Optionally create a simple derived feature and visualize the data using PCA.
+- What the code does:
+  - optionally creates `flavanoid_ratio = flavanoids / total_phenols` if the necessary columns exist (demonstrates a basic feature transformation)
+  - standardizes features (important for PCA)
+  - runs PCA to 2 components and plots a 2D scatter colored by class label
+  - prints explained variance ratio for the first two components
+- Inputs: `X` from PART B
+- Outputs: PCA scatterplot and explained variance numbers
+- Why this matters: PCA shows structure and separation between classes in 2D and helps visualize whether the classes are linearly separable.
+- Student tip: try removing the derived feature and re-running PCA to see how it affects the plot.
+
+PART D — Train/Test split and scaling (Cell 9)
+- Objective: Split the data into training and test sets (80/20) with stratification, then scale features using the training set only.
+- What the code does:
+  - uses `train_test_split(..., stratify=y, test_size=0.2)` to preserve class proportions
+  - fits `StandardScaler()` on `X_train` and transforms both `X_train` and `X_test` with the fitted scaler
+  - prints the shapes of the train and test sets
+- Inputs: `X`, `y` from earlier cells
+- Outputs: `X_train_scaled`, `X_test_scaled`, `y_train`, `y_test`, and a fitted `scaler` object
+- Why this matters: scaling with training data only prevents information leakage and is required for models that assume normalized features (and for PCA earlier as well).
+- Student tip: always fit preprocessors on training data only.
+
+PART E — Modelling and evaluation (Cell 11)
+- Objective: Train two models (Logistic Regression and Random Forest) and evaluate their performance on the test set.
+- What the code does:
+  - creates and fits `LogisticRegression` (multinomial) and `RandomForestClassifier` on scaled training data
+  - predicts labels on the scaled test set for both models
+  - computes and prints accuracy scores, classification reports (precision/recall/F1) and confusion matrices
+- Inputs: scaled train/test sets and labels
+- Outputs: printed numeric metrics and confusion matrices
+- Why this matters: comparing different algorithms helps you choose a model that balances accuracy and interpretability. Classification report (macro averages) is useful for multi-class evaluation.
+- Student tip: check the confusion matrix to see which classes are mislabelled most often; this often reveals where the model struggles.
+
+PART F — Save best model, scaler, and metrics CSV (Cell 13)
+- Objective: Persist the evaluation summary and the best model + scaler for later use.
+- What the code does:
+  - builds a small metrics table (one row per model) containing accuracy and macro-averaged precision/recall/f1
+  - saves that table to a timestamped CSV named like `metrics-wine-YYYYMMDD-HHMMSS.csv`
+  - picks the best model by accuracy and saves it under `models/{ModelName}-wine-YYYYMMDD-HHMMSS.joblib`
+  - saves the scaler as `models/scaler-wine-YYYYMMDD-HHMMSS.joblib`
+  - prints the paths where artifacts were saved
+- Inputs: model predictions and computed metrics
+- Outputs: CSV file and joblib files inside the `models` folder
+- Why this matters: persisting models and their preprocessing helps deploy or re-run predictions later without retraining.
+- Student tip: inspect the CSV file to compare model metrics between runs and to record reproducibility info.
+
+How to run the notebook safely (short checklist)
+1. Install required packages: pandas, scikit-learn, matplotlib, seaborn, joblib (use pip or conda).
+2. Open the notebook `Week2Exercises/week02_ml_assignment.ipynb` in VS Code or Jupyter.
+3. Run cells in order, from top to bottom. If the kernel errors, read the error message — most errors are missing imports or name errors caused by skipping earlier cells.
+4. After successful run, check the `models` folder for saved scaler and model joblib files, and look for the `metrics-wine-*.csv` file in the notebook folder.
+
+Extra learning notes (brief)
+- EDA is your first defense: always confirm data shape, column names, value ranges and class balance before modelling.
+- Avoid data leakage: fit scalers/transformers on training data only.
+- Use stratified splits for imbalanced classes so evaluation reflects the class distribution.
+- PCA is for visualization and dimensionality reduction; it is sensitive to scaling.
+- Saving models and preprocessing together allows reproducible predictions later.
+
+If you want, I can also:
+- run the notebook end-to-end here (non-interactive) and produce the CSV and joblib artifacts and an executed notebook with outputs,
+- or produce a short `requirements.txt` listing the Python packages used.
+
+File location
+- This file: `Week2Exercises/assignment_instructions.txt`
+- Notebook: `Week2Exercises/week02_ml_assignment.ipynb`
+
+Good luck — run each part step-by-step and read printed outputs to learn what the code produces!

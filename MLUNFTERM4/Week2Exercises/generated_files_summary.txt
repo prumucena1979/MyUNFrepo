@@ -1,0 +1,43 @@
+Generated files summary (concise)
+
+This file lists files the notebook may produce when you run it, with a short explanation of their content, when they are created (which part of the notebook), how they are created, and why they are useful.
+
+1) models/{ModelName}-wine-YYYYMMDD-HHMMSS.joblib
+   - Content: Serialized trained model (joblib dump) for the model named {ModelName} (e.g., LogisticRegression or RandomForest).
+   - When: Created in PART F after models have been trained and evaluated; the best model by accuracy is saved.
+   - How: `joblib.dump(best_model, best_model_path)` where `best_model_path` includes a timestamp.
+   - Why: Persist the trained model so you can load it later for prediction or deployment without retraining.
+
+2) models/scaler-wine-YYYYMMDD-HHMMSS.joblib
+   - Content: Serialized `StandardScaler` instance fitted on the training data.
+   - When: Created in PART F immediately after models are evaluated.
+   - How: `joblib.dump(scaler, os.path.join('models', f'scaler-wine-{ts}.joblib'))` where `ts` is a timestamp.
+   - Why: The scaler is required to preprocess new data the same way as training data before feeding it to the model.
+
+3) metrics-wine-YYYYMMDD-HHMMSS.csv
+   - Content: Small CSV table with one row per evaluated model containing metrics: accuracy, macro_precision, macro_recall, macro_f1.
+   - When: Created in PART F after evaluation of the trained models.
+   - How: `metrics_df.to_csv(metrics_csv_path, index=False)` with a filename containing timestamp `ts`.
+   - Why: Records and preserves evaluation results for reproducibility, comparisons across runs, and reporting.
+
+4) (Optional) PNG / Plot files
+   - Content: The notebook creates on-screen plots (histograms, correlation heatmap, PCA scatter). It does not automatically save PNGs by default, but you can add `plt.savefig(...)` calls in the cells to persist them.
+   - When: Created during PART A (histograms), PART B (correlation heatmap), and PART C (PCA scatter) if `savefig` is added.
+   - How: Use `plt.savefig('plots/pca-wine-YYYYMMDD-HHMMSS.png')` after drawing the plot.
+   - Why: Saved visualizations help include results in reports or presentations without re-running the notebook.
+
+5) (Optional) Executed notebook with outputs
+   - Content: A copy of the notebook with outputs embedded (cells marked as executed and containing printed text and images).
+   - When: After you run the notebook end-to-end or run a tool that executes it (nbconvert, nbclient, or a custom runner).
+   - How: Use Jupyter "Download as" or `nbconvert --execute --to notebook --output executed.ipynb` to create a notebook with outputs.
+   - Why: Useful for sharing reproducible outputs and for grading or reviewing without needing to re-run code.
+
+Notes:
+- Filenames include a timestamp (YYYYMMDD-HHMMSS) to avoid overwriting previous runs and to help track when results were produced.
+- The `models/` folder is created automatically by the notebook (via `os.makedirs('models', exist_ok=True)`).
+- If you want persistent plot files or additional logs, I can update the notebook to save them automatically.
+
+File location
+- `Week2Exercises/generated_files_summary.txt` (this file)
+
+Done. If you want this even more compact (CSV-style table) or want me to add automatic PNG-saving to the notebook, tell me which plots to save and I will patch the notebook.
